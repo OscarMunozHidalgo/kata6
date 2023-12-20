@@ -3,56 +3,46 @@ package software.ulpgc.kata6;
 import static java.util.Arrays.fill;
 
 public class Field {
-    private static final char mine = 'x';
+    public static char mine = 'x';
+    public static char unselected = '.';
     private char[][] state;
     private char[][] display;
 
     public Field(char[][] state) {
         this.state = state;
         this.display = new char[state.length][state[0].length];
-        blankDisplay();
+        clearDisplay();
     }
 
-    private void blankDisplay() {
-        for(int i = 0; i < state.length;i++){
-            fill(display[i], '.');
+    private void clearDisplay() {
+        for (int i = 0 ; i<state.length;i++){
+            fill(display[i], unselected);
         }
     }
 
-    public String show(){
+    public String displayToString(){
         String result = "";
         for(char[] i : display){
-            for (char c : i){
-                result+=c;
+            for(char j : i){
+                result += j;
             }
             result+="\n";
         }
         return result;
     }
 
-    public String play(int x,int y){
-        if(!validCoords(x,y)) {return "Jugada x=" + x + ",y=" + y + " no válida\n";}
-        if(state[y][x]==mine) {display[y][x] = 'x'; return show();}
-        int result = 0;
-        if(y>0) result += countLine(x,y-1);
-        result+=countLine(x,y);
-        if(y<state.length-1) result += countLine(x,y+1);
-
-        display[y][x] = (char) (result+48);
-        return show();
+    public String play(int x, int y){
+        if(!validCoords(x,y)) {return "Illegal Move\n";}
+        checkForMines(x,y);
+        return displayToString();
     }
 
-    private int countLine(int x, int y) {
-        int result = 0;
-        for(int i = Math.max(x-1, 0); i<=Math.min(x,state[0].length);i++){
-            if(state[y][i]==mine){result ++;}
-        }
-        return result;
+    private void checkForMines(int x, int y) {
+        display[y][x] = (state[y][x]==mine) ?  'x' : '0';
     }
 
     private boolean validCoords(int x, int y) {
-        return (x >= 0 && x <= state[0].length - 1) && (y >= 0 && y < state.length);
+        return (x>=0 && x<=state[0].length-1 && y>=0 && y<=state.length-1);
     }
-
 
 }
